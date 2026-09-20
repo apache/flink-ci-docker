@@ -11,7 +11,7 @@ RUN set -eux; \
 		less \
 		build-essential \
 		`# default JDK for Apache Flink` \
-		openjdk-8-jdk \
+		openjdk-8-jdk-headless \
 		`# FLINK-18356` \
 		libjemalloc-dev \
 		curl \
@@ -21,6 +21,7 @@ RUN set -eux; \
 		uuid-runtime \
 		jq \
 		bsdmainutils \
+    	moreutils \
 		wget \
 		`# for pyflink test suite` \
 		python3 \
@@ -36,7 +37,8 @@ RUN set -eux; \
 RUN set -eux; \
   add-apt-repository -y ppa:git-core/ppa; \
   apt-get update; \
-  apt-get install -y git
+  apt-get install -y git; \
+  rm -rf /var/lib/apt/lists/*
 
 # Install Temurin JDK11
 RUN wget -qO- https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz \
@@ -95,13 +97,29 @@ ARG MAVEN_VERSION=3.8.6
 ARG USER_HOME_DIR="/root"
 ARG BASE_URL=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${MAVEN_VERSION}
 
-RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
+RUN mkdir -p /usr/share/maven \
   && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
   && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
   && rm -f /tmp/apache-maven.tar.gz \
   && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
 ENV MAVEN_HOME /usr/share/maven
+
+# Download the Maven Wrapper once, then use it to stage its jar and pre-warm the
+# Maven distribution cache, so CI's ./mvnw needs no network to bootstrap.
+ARG MAVEN_WARM_VERSIONS="3.8.6 3.9.16"
+ARG MAVEN_WRAPPER_VERSION=3.3.4
+RUN set -eux; \
+    work="$(mktemp -d)"; cd "$work"; \
+    curl -fsSL -o d.zip "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper-distribution/${MAVEN_WRAPPER_VERSION}/maven-wrapper-distribution-${MAVEN_WRAPPER_VERSION}-bin.zip"; \
+    unzip -q d.zip; chmod +x mvnw; \
+    mkdir -p /opt/maven-wrapper; \
+    cp .mvn/wrapper/maven-wrapper.jar "/opt/maven-wrapper/maven-wrapper-${MAVEN_WRAPPER_VERSION}.jar"; \
+    for v in $MAVEN_WARM_VERSIONS; do \
+      printf 'distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/%s/apache-maven-%s-bin.zip\n' "$v" "$v" > .mvn/wrapper/maven-wrapper.properties; \
+      ./mvnw --version; \
+    done; \
+    cd /; rm -rf "$work"
 
 # Use UTF-8
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen ; locale-gen ; update-locale en_US.UTF-8
