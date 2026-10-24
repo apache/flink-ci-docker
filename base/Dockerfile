@@ -1,5 +1,5 @@
 # check=skip=FromPlatformFlagConstDisallowed
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM --platform=linux/amd64 ubuntu:26.04
 
 # install packages
 RUN set -eux; \
@@ -158,13 +158,3 @@ ENV LANGUAGE="en_US.UTF-8"
 # OpenSSL 1.0.0, required by netty-tcnative on older Flink branches (e.g. 1.20)
 RUN wget -r --no-parent -nd --accept=libssl1.0.0_*ubuntu5.*_amd64.deb http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/
 RUN apt install ./libssl1.0.0_*.deb
-
-# OpenSSL 3.4.x (OPENSSL_3.2.0 symbols) required by flink-shaded-netty-tcnative-dynamic 2.0.81+,
-# which Ubuntu 24.04 (OpenSSL 3.0.13) lacks. Put it in /usr/local/lib so ldconfig prefers it.
-RUN set -eux; \
-	tmp="$(mktemp -d)"; cd "$tmp"; \
-	wget -q http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3t64_3.4.1-1ubuntu3_amd64.deb; \
-	dpkg-deb -x libssl3t64_3.4.1-1ubuntu3_amd64.deb extracted; \
-	cp -a extracted/usr/lib/x86_64-linux-gnu/libssl.so.3 extracted/usr/lib/x86_64-linux-gnu/libcrypto.so.3 /usr/local/lib/; \
-	ldconfig; \
-	cd /; rm -rf "$tmp"
