@@ -26,6 +26,7 @@ RUN set -eux; \
 		wget \
 		`# for pyflink test suite` \
 		python3 \
+		python3-dev \
 		docker.io \
 		psmisc \
 		software-properties-common \
