@@ -5,7 +5,6 @@ FROM --platform=linux/amd64 ubuntu:26.04
 RUN set -eux; \
 	apt-get update; apt-get upgrade -y ; \
 	apt-get install -y \
-		gosu \
 		sudo \
 		locales \
 		make \
@@ -86,13 +85,6 @@ RUN mkdir -p /usr/share/go \
  && wget -qO- https://go.dev/dl/go1.27.1.linux-amd64.tar.gz \
   | tar -xz -C /usr/share/go --strip-components=1 \
  && ln -s /usr/share/go/bin/go /usr/bin/go
-
-# Install hugo
-RUN mkdir -p /usr/share/hugo \
- && curl -fsSL -o /tmp/hugo.tar.gz https://github.com/gohugoio/hugo/releases/download/v0.98.0/hugo_extended_0.98.0_Linux-64bit.tar.gz \
- && tar -xzf /tmp/hugo.tar.gz -C /usr/share/hugo \
- && rm -f /tmp/hugo.tar.gz \
- && ln -s /usr/share/hugo/hugo /usr/bin/hugo
 
 # Install maven
 ARG MAVEN_VERSION=3.8.6
