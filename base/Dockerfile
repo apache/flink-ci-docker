@@ -42,29 +42,29 @@ RUN set -eux; \
   rm -rf /var/lib/apt/lists/*
 
 # Install Temurin JDK11
-RUN wget -qO- https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.19%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.19_7.tar.gz \
+RUN wget -qO- https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.33.1%2B1/OpenJDK11U-jdk_x64_linux_hotspot_11.0.33.1_1.tar.gz \
   | tar -C /usr/lib/jvm -xz
 
 # Install Temurin JDK17
-RUN wget -qO- https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.7_7.tar.gz \
+RUN wget -qO- https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21.1%2B2/OpenJDK17U-jdk_x64_linux_hotspot_17.0.21.1_2.tar.gz \
   | tar -C /usr/lib/jvm -xz
 
 # Install Temurin JDK21
-RUN wget -qO- https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_linux_hotspot_21.0.1_12.tar.gz \
+RUN wget -qO- https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.13.1%2B2/OpenJDK21U-jdk_x64_linux_hotspot_21.0.13.1_2.tar.gz \
   | tar -C /usr/lib/jvm -xz
 
 # Install Temurin JDK25
-RUN wget -qO- https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk_x64_linux_hotspot_25.0.3_9.tar.gz \
+RUN wget -qO- https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.5.1%2B2/OpenJDK25U-jdk_x64_linux_hotspot_25.0.5.1_2.tar.gz \
   | tar -C /usr/lib/jvm -xz
 
 # Add java to PATH for all users, and user
 # use java8 by default, but provide java11 as well
 RUN echo "PATH=/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH" >> /etc/environment
 RUN echo "JAVA_HOME_8_X64=/usr/lib/jvm/java-8-openjdk-amd64" >> /etc/environment
-RUN echo "JAVA_HOME_11_X64=/usr/lib/jvm/jdk-11.0.19+7" >> /etc/environment
-RUN echo "JAVA_HOME_17_X64=/usr/lib/jvm/jdk-17.0.7+7" >> /etc/environment
-RUN echo "JAVA_HOME_21_X64=/usr/lib/jvm/jdk-21.0.1+12" >> /etc/environment
-RUN echo "JAVA_HOME_25_X64=/usr/lib/jvm/jdk-25.0.3+9" >> /etc/environment
+RUN echo "JAVA_HOME_11_X64=/usr/lib/jvm/jdk-11.0.33.1+1" >> /etc/environment
+RUN echo "JAVA_HOME_17_X64=/usr/lib/jvm/jdk-17.0.21.1+2" >> /etc/environment
+RUN echo "JAVA_HOME_21_X64=/usr/lib/jvm/jdk-21.0.13.1+2" >> /etc/environment
+RUN echo "JAVA_HOME_25_X64=/usr/lib/jvm/jdk-25.0.5.1+2" >> /etc/environment
 RUN echo "JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /etc/environment
 RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 RUN update-alternatives --set javac /usr/lib/jvm/java-8-openjdk-amd64/bin/javac
@@ -73,10 +73,10 @@ RUN update-alternatives --set jstack /usr/lib/jvm/java-8-openjdk-amd64/bin/jstac
 RUN update-alternatives --set javadoc /usr/lib/jvm/java-8-openjdk-amd64/bin/javadoc
 
 ENV JAVA_HOME_8_X64="/usr/lib/jvm/java-8-openjdk-amd64"
-ENV JAVA_HOME_11_X64="/usr/lib/jvm/jdk-11.0.19+7"
-ENV JAVA_HOME_17_X64="/usr/lib/jvm/jdk-17.0.7+7"
-ENV JAVA_HOME_21_X64="/usr/lib/jvm/jdk-21.0.1+12"
-ENV JAVA_HOME_25_X64="/usr/lib/jvm/jdk-25.0.3+9"
+ENV JAVA_HOME_11_X64="/usr/lib/jvm/jdk-11.0.33.1+1"
+ENV JAVA_HOME_17_X64="/usr/lib/jvm/jdk-17.0.21.1+2"
+ENV JAVA_HOME_21_X64="/usr/lib/jvm/jdk-21.0.13.1+2"
+ENV JAVA_HOME_25_X64="/usr/lib/jvm/jdk-25.0.5.1+2"
 ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 ENV LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libjemalloc.so"
 
